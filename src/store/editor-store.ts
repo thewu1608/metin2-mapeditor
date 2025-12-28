@@ -97,7 +97,7 @@ export const useEditorStore = create<EditorStore>((set) => ({
       yaw: 0,
       pitch: 0,
       roll: 0,
-      heightBias: -95,
+      heightBias: 0,
       randomYaw: false,
     },
   },

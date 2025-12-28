@@ -212,6 +212,7 @@ const TerrainMesh = () => {
       gr2Path: selected.gr2Path,
     };
     addChunkObject(chunkId, next);
+    setSelectedObject({ id, chunkId });
   };
 
   if (!chunkMeshes.length) {
