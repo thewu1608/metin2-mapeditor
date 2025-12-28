@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { parsePropertyFile } from "../../lib/parsers/property";
 import { getCaseCrc32 } from "../../lib/utils/crc32";
 import { useEditorStore } from "../../store/editor-store";
@@ -17,6 +17,7 @@ const ObjectBrowser = () => {
   const [gr2Path, setGr2Path] = useState("");
   const [query, setQuery] = useState("");
   const [importStatus, setImportStatus] = useState("");
+  const [visibleCount, setVisibleCount] = useState(200);
 
   const filtered = useMemo(() => {
     const needle = query.trim().toLowerCase();
@@ -25,6 +26,10 @@ const ObjectBrowser = () => {
       asset.label.toLowerCase().includes(needle) || String(asset.crc32).includes(needle),
     );
   }, [assets, query]);
+
+  useEffect(() => {
+    setVisibleCount(200);
+  }, [query, assets.length]);
 
   const handleAdd = () => {
     const directCrc = Number(crcInput);
@@ -50,18 +55,39 @@ const ObjectBrowser = () => {
       const lower = file.name.toLowerCase();
       return lower.endsWith(".prb") || lower.endsWith(".prt");
     });
-    const assets = [];
-    for (const file of propertyFiles) {
+    if (!propertyFiles.length) {
+      setImportStatus("Keine Property-Dateien gefunden");
+      return;
+    }
+    setImportStatus(`Import laeuft... 0/${propertyFiles.length}`);
+    const batch: ReturnType<typeof parsePropertyFile>[] = [];
+    let didSelect = Boolean(selectedAssetId);
+    const batchSize = 200;
+    const flush = () => {
+      const ready = batch.filter((item): item is NonNullable<typeof item> => Boolean(item));
+      if (!ready.length) return;
+      upsertObjectAssets(ready);
+      if (!didSelect) {
+        setSelectedObjectAsset(ready[0].id);
+        didSelect = true;
+      }
+      batch.length = 0;
+    };
+    for (let index = 0; index < propertyFiles.length; index += 1) {
+      const file = propertyFiles[index];
       const text = await file.text();
       const parsed = parsePropertyFile(text, file.name);
-      if (parsed) assets.push(parsed);
-    }
-    if (assets.length) {
-      upsertObjectAssets(assets);
-      if (!selectedAssetId) {
-        setSelectedObjectAsset(assets[0].id);
+      if (parsed) batch.push(parsed);
+      if (batch.length >= batchSize) {
+        flush();
+        setImportStatus(`Import laeuft... ${Math.min(index + 1, propertyFiles.length)}/${propertyFiles.length}`);
+        await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
       }
-      setImportStatus(`${assets.length} Properties geladen`);
+    }
+    flush();
+    const total = propertyFiles.length;
+    if (total) {
+      setImportStatus(`${total} Properties verarbeitet`);
     } else {
       setImportStatus("Keine Property-Dateien gefunden");
     }
@@ -190,7 +216,7 @@ const ObjectBrowser = () => {
         </div>
       </div>
       <div className="mt-3 space-y-2 text-xs text-inkMuted">
-        {filtered.map((asset) => (
+        {filtered.slice(0, visibleCount).map((asset) => (
           <button
             key={asset.id}
             className={`w-full rounded-md border px-3 py-2 text-left ${
@@ -207,6 +233,14 @@ const ObjectBrowser = () => {
             ) : null}
           </button>
         ))}
+        {filtered.length > visibleCount ? (
+          <button
+            className="w-full rounded-md border border-white/5 bg-white/5 px-3 py-2 text-[11px] text-inkMuted hover:text-ink"
+            onClick={() => setVisibleCount((current) => current + 200)}
+          >
+            Mehr anzeigen ({visibleCount}/{filtered.length})
+          </button>
+        ) : null}
         {filtered.length === 0 ? (
           <div className="rounded-md border border-white/5 bg-white/5 px-3 py-2 text-[11px] text-inkMuted">
             Keine Objekte gefunden.
