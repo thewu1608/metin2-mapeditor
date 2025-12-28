@@ -31,6 +31,7 @@ const ObjectRenderer = () => {
   const terrain = useEditorStore((state) => state.terrain);
   const controls = useThree((state) => state.controls) as { enabled?: boolean } | null;
   const selectedRef = useRef<THREE.Group>(null);
+  const markerSize = Math.max(1.4, (project.settings.cellScale / 100) * 0.8);
 
   const objects = useMemo(() => {
     return Object.entries(project.chunks).flatMap(([chunkId, chunk]) =>
@@ -119,7 +120,8 @@ const ObjectRenderer = () => {
     const { obj } = entry;
     const x = toEditorUnits(obj.position.x);
     const z = toEditorUnits(obj.position.y);
-    const y = toEditorUnits(obj.position.z + obj.heightBias) * terrain.exaggeration;
+    const y =
+      toEditorUnits(obj.position.z + obj.heightBias) * terrain.exaggeration + markerSize * 0.45;
     const scale = obj.scale ?? { x: 1, y: 1, z: 1 };
     const rotation = new THREE.Euler(
       THREE.MathUtils.degToRad(obj.rotation.y),
@@ -141,9 +143,15 @@ const ObjectRenderer = () => {
         scale={[scale.x, scale.y, scale.z]}
         onPointerDown={onSelect}
       >
-        <mesh>
-          <boxGeometry args={[1.2, 2.0, 1.2]} />
-          <meshStandardMaterial color={isSelected ? "#f2c07a" : "#c29f74"} />
+        <mesh renderOrder={2}>
+          <boxGeometry args={[markerSize, markerSize * 1.6, markerSize]} />
+          <meshBasicMaterial
+            color={isSelected ? "#f2c07a" : "#7ad3f2"}
+            depthTest={false}
+            depthWrite={false}
+            transparent
+            opacity={0.9}
+          />
         </mesh>
       </group>
     );
