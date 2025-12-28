@@ -59,3 +59,26 @@
 ## Testdaten
 - Map-Beispiel: `metin2_map_a1` (Ordnerstruktur 000000/000001/... mit height.raw).
 - ZIP-Struktur muss Chunk-Ordner enthalten (000000/height.raw usw.).
+
+## Letzte Aenderungen (aktuell)
+- Objekt-Gizmo implementiert: Auswahl, Bewegen/Drehen/Skalieren im Viewport; Transform-Daten werden zurueck in AreaData geschrieben (Position/Rotation/HeightBias).
+- Objekte koennen beim Verschieben zwischen Chunks wechseln.
+- Neue Objekte werden nach Platzierung automatisch selektiert.
+- Default-HeightBias auf 0 gesetzt.
+- Objekt-Marker im Viewport deutlich sichtbar gemacht (groesser, immer oben gerendert).
+- Property-Import gebatcht + Objektliste begrenzt (Mehr anzeigen), damit der Viewport nicht einfriert.
+- Layout angepasst: Seitenpanels scrollen, Canvas bleibt stabil.
+- Doku ergaenzt: Objekte platzieren (docs/usage.md).
+
+## Repo/Issues
+- Mapeditor ist ein eigenes Repo: https://github.com/thewu1608/metin2-mapeditor
+- Issue #1 angelegt: Objekt-Gizmo fuer Platzierung.
+
+## Offenes Problem
+- Nutzer sieht nach Property-Import keine Objekte auf der Map, obwohl Assets vorhanden sind.
+- Letzter Stand: Marker wurden sichtbar gemacht, bitte erneut testen.
+
+## Naechste Schritte
+1) Testen, ob Marker jetzt sichtbar sind (Objects-Tool, Asset auswaehlen, auf Map klicken).
+2) Falls weiterhin unsichtbar: Debuggen, ob Objekte korrekt im Store landen und gerendert werden.
+
