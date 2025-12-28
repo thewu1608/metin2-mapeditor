@@ -45,16 +45,16 @@ const AppShell = () => {
       <div className="grid min-h-screen grid-rows-[auto_auto_1fr_auto]">
         <MainToolbar />
         <ToolOptions />
-        <main className="grid min-h-0 grid-cols-[260px_1fr_320px]">
-          <section className="flex min-h-0 flex-col gap-3 border-r border-white/5 bg-panel/80 p-3">
+        <main className="grid h-full min-h-0 grid-cols-[260px_1fr_320px] overflow-hidden">
+          <section className="flex min-h-0 flex-col gap-3 overflow-y-auto border-r border-white/5 bg-panel/80 p-3">
             <ProjectLoader />
             <ObjectBrowser />
             <LayersPanel />
           </section>
-          <section className="min-h-0 bg-canvas">
+          <section className="h-full min-h-0 bg-canvas">
             <Viewport3D />
           </section>
-          <section className="flex min-h-0 flex-col gap-3 border-l border-white/5 bg-panel/90 p-3">
+          <section className="flex min-h-0 flex-col gap-3 overflow-y-auto border-l border-white/5 bg-panel/90 p-3">
             <PropertiesPanel />
             <SpawnEditor />
           </section>
