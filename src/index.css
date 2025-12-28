@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: "Space Grotesk", system-ui, sans-serif;
+  color: #e8ecf2;
+  background: radial-gradient(circle at top, #1b2230 0%, #0b0f16 50%, #070a0f 100%);
+}
+
+button {
+  font-family: inherit;
+}
+
+.app-bg {
+  background: radial-gradient(circle at 20% 0%, rgba(255, 215, 130, 0.12), transparent 45%),
+    radial-gradient(circle at 80% 20%, rgba(88, 142, 255, 0.08), transparent 50%),
+    linear-gradient(180deg, #0b0f16 0%, #0f141d 60%, #0b0f16 100%);
+}
